@@ -38,6 +38,14 @@ public class Script : MonoBehaviour
     {
         blocks = new GameObject[3, 3, 3];
     }
+    
+    private void RefreshBlocksReference(){
+        GameObject[,,] copy(blocks);
+        foreach(GameObject b in copy){
+            blocks[Mathf.RoundToInt(b.transform.position.x),Mathf.RoundToInt(b.transform.position.y),Mathf.RoundToInt(b.transform.position.z)]=b;
+        }
+        return;
+    }
 
     void Start()
     {
@@ -57,7 +65,29 @@ public class Script : MonoBehaviour
     }
 
     ///<summary>对顶面顺时针旋转90度</summary>
-    public void RotUp()
+    public void RotUp(){
+        temp = blocks[1, 2, 1];
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (i == 1 && j == 1)
+                {
+                    continue;
+                }
+                blocks[i, 2, j].transform.SetParent(temp.transform);
+            }
+        }
+        //IEnumerator coroutine = Rot('y', blocks[1, 2, 1].transform);
+        StartCoroutine(Rot('y', blocks[1, 2, 1].transform));
+        
+        RefreshBlocksReference();
+    }
+
+
+
+    ///<summary>对顶面顺时针旋转90度  deprecated</summary>
+    public void RotUp(bool placeholder)
     {
         temp = blocks[1, 2, 1];
         for (int i = 0; i < 3; i++)
@@ -127,7 +157,7 @@ public class Script : MonoBehaviour
                 dest = o.transform.rotation.eulerAngles.y - 90;
                 for (int i = 0; i < 30; i++)
                 {
-                    o.Rotate(0, 3f, 0);
+                    o.Rotate(0, -3f, 0);
                     yield return 0;
                 }
                 o.rotation = Quaternion.Euler(0, dest, 0);
@@ -138,10 +168,10 @@ public class Script : MonoBehaviour
                 dest = o.transform.rotation.eulerAngles.x + 90;
                 for (int i = 0; i < 30; i++)
                 {
-                    o.Rotate(0, 3f, 0);
+                    o.Rotate(3f, 0, 0);
                     yield return 0;
                 }
-                o.rotation = Quaternion.Euler(0, dest, 0);
+                o.rotation = Quaternion.Euler(dest, 0, 0);
 
                 break;
                 //ToDo: 续写
